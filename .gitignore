@@ -1,0 +1,5 @@
+# M5 data is downloaded by eval/download_data.py (too large for GitHub)
+data/
+__pycache__/
+*.pyc
+.DS_Store

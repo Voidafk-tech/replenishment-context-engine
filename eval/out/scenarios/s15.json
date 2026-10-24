@@ -1,0 +1,38 @@
+{
+ "id": "s15",
+ "m5": {
+  "item": "FOODS_3_498",
+  "state": "CA",
+  "date": "2015-12-12",
+  "state_ratio": 9.74,
+  "spiked_stores": [
+   "CA_1",
+   "CA_3"
+  ]
+ },
+ "question": {
+  "product_name": "Sunscreen SPF50",
+  "stores": [
+   "CA_1",
+   "CA_3"
+  ],
+  "spike_date": "2015-12-12"
+ },
+ "truth": {
+  "total_gap": 325,
+  "total_cases": 325,
+  "shipments": {
+   "Stockton DC": 325,
+   "Fontana DC": 0
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Stockton DC": 355,
+   "Fontana DC": 0
+  },
+  "traps": [
+   "secondary_truck_late"
+  ]
+ }
+}

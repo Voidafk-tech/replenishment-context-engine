@@ -1,0 +1,38 @@
+{
+ "id": "s09",
+ "m5": {
+  "item": "FOODS_3_069",
+  "state": "WI",
+  "date": "2015-12-31",
+  "state_ratio": 11.87,
+  "spiked_stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ]
+ },
+ "question": {
+  "product_name": "Iced tea 12x340ml",
+  "stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ],
+  "spike_date": "2015-12-31"
+ },
+ "truth": {
+  "total_gap": 539,
+  "total_cases": 539,
+  "shipments": {
+   "Madison DC": 539,
+   "Green Bay DC": 0
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Madison DC": 577,
+   "Green Bay DC": 367
+  },
+  "traps": []
+ }
+}

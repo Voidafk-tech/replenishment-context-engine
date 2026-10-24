@@ -1,0 +1,40 @@
+{
+ "id": "s10",
+ "m5": {
+  "item": "FOODS_3_723",
+  "state": "TX",
+  "date": "2015-06-15",
+  "state_ratio": 10.94,
+  "spiked_stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ]
+ },
+ "question": {
+  "product_name": "Hot dog buns 8pk",
+  "stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ],
+  "spike_date": "2015-06-15"
+ },
+ "truth": {
+  "total_gap": 190,
+  "total_cases": 190,
+  "shipments": {
+   "Waco DC": 106,
+   "Houston DC": 84
+  },
+  "fully_covered": true,
+  "needs_approval": true,
+  "limits": {
+   "Waco DC": 106,
+   "Houston DC": 104
+  },
+  "traps": [
+   "primary_capacity_binding"
+  ]
+ }
+}

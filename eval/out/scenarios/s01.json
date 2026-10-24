@@ -1,0 +1,38 @@
+{
+ "id": "s01",
+ "m5": {
+  "item": "FOODS_3_580",
+  "state": "CA",
+  "date": "2015-06-02",
+  "state_ratio": 19.89,
+  "spiked_stores": [
+   "CA_1",
+   "CA_3"
+  ]
+ },
+ "question": {
+  "product_name": "Spring water 24x500ml",
+  "stores": [
+   "CA_1",
+   "CA_3"
+  ],
+  "spike_date": "2015-06-02"
+ },
+ "truth": {
+  "total_gap": 566,
+  "total_cases": 566,
+  "shipments": {
+   "Stockton DC": 255,
+   "Fontana DC": 311
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Stockton DC": 255,
+   "Fontana DC": 438
+  },
+  "traps": [
+   "primary_capacity_binding"
+  ]
+ }
+}

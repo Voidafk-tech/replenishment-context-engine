@@ -1,0 +1,40 @@
+{
+ "id": "s06",
+ "m5": {
+  "item": "FOODS_3_090",
+  "state": "WI",
+  "date": "2016-01-09",
+  "state_ratio": 13.0,
+  "spiked_stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ]
+ },
+ "question": {
+  "product_name": "Burger buns 8pk",
+  "stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ],
+  "spike_date": "2016-01-09"
+ },
+ "truth": {
+  "total_gap": 231,
+  "total_cases": 93,
+  "shipments": {
+   "Madison DC": 0,
+   "Green Bay DC": 93
+  },
+  "fully_covered": false,
+  "needs_approval": false,
+  "limits": {
+   "Madison DC": 0,
+   "Green Bay DC": 93
+  },
+  "traps": [
+   "primary_trucks_down"
+  ]
+ }
+}

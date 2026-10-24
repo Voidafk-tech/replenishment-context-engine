@@ -1,0 +1,1 @@
+{"total_cases": 206, "shipments": [{"from_dc": "Madison DC", "cases": 168}, {"from_dc": "Green Bay DC", "cases": 38}], "fully_covered": true, "needs_approval": false}

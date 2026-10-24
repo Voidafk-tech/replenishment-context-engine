@@ -1,0 +1,40 @@
+{
+ "id": "s08",
+ "m5": {
+  "item": "FOODS_3_202",
+  "state": "TX",
+  "date": "2015-09-13",
+  "state_ratio": 12.43,
+  "spiked_stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ]
+ },
+ "question": {
+  "product_name": "Popsicles 12pk",
+  "stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ],
+  "spike_date": "2015-09-13"
+ },
+ "truth": {
+  "total_gap": 216,
+  "total_cases": 216,
+  "shipments": {
+   "Waco DC": 202,
+   "Houston DC": 14
+  },
+  "fully_covered": true,
+  "needs_approval": true,
+  "limits": {
+   "Waco DC": 202,
+   "Houston DC": 178
+  },
+  "traps": [
+   "secondary_in_eaches"
+  ]
+ }
+}

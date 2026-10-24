@@ -1,0 +1,588 @@
+{
+ "summary": {
+  "raw": {
+   "n": 19,
+   "correct": 19,
+   "unsafe": 0,
+   "invalid": 0,
+   "mean_input_tokens": 4636,
+   "tokens_measured": false
+  },
+  "context": {
+   "n": 19,
+   "correct": 19,
+   "unsafe": 0,
+   "invalid": 0,
+   "mean_input_tokens": 759,
+   "tokens_measured": false
+  }
+ },
+ "rows": [
+  {
+   "id": "s01",
+   "cond": "raw",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 566,
+   "input_tokens": 5222,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s01",
+   "cond": "context",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 566,
+   "input_tokens": 736,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s02",
+   "cond": "raw",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 554,
+   "input_tokens": 5233,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s02",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 554,
+   "input_tokens": 793,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s03",
+   "cond": "raw",
+   "traps": [
+    "secondary_truck_late"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 359,
+   "input_tokens": 4192,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s03",
+   "cond": "context",
+   "traps": [
+    "secondary_truck_late"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 359,
+   "input_tokens": 767,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s04",
+   "cond": "raw",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 290,
+   "input_tokens": 5224,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s04",
+   "cond": "context",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 290,
+   "input_tokens": 792,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s05",
+   "cond": "raw",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 341,
+   "input_tokens": 4200,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s05",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 341,
+   "input_tokens": 741,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s06",
+   "cond": "raw",
+   "traps": [
+    "primary_trucks_down"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 93,
+   "input_tokens": 4217,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s06",
+   "cond": "context",
+   "traps": [
+    "primary_trucks_down"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 93,
+   "input_tokens": 765,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s07",
+   "cond": "raw",
+   "traps": [
+    "secondary_truck_late",
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 190,
+   "input_tokens": 5230,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s07",
+   "cond": "context",
+   "traps": [
+    "secondary_truck_late",
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 190,
+   "input_tokens": 738,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s08",
+   "cond": "raw",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 216,
+   "input_tokens": 4186,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s08",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 216,
+   "input_tokens": 761,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s09",
+   "cond": "raw",
+   "traps": [],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 539,
+   "input_tokens": 4240,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s09",
+   "cond": "context",
+   "traps": [],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 539,
+   "input_tokens": 766,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s10",
+   "cond": "raw",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 190,
+   "input_tokens": 4170,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s10",
+   "cond": "context",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 190,
+   "input_tokens": 756,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s11",
+   "cond": "raw",
+   "traps": [
+    "secondary_in_eaches",
+    "secondary_truck_late"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 133,
+   "input_tokens": 5230,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s11",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches",
+    "secondary_truck_late"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 133,
+   "input_tokens": 746,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s12",
+   "cond": "raw",
+   "traps": [],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 171,
+   "input_tokens": 4194,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s12",
+   "cond": "context",
+   "traps": [],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 171,
+   "input_tokens": 760,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s13",
+   "cond": "raw",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 206,
+   "input_tokens": 4219,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s13",
+   "cond": "context",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 206,
+   "input_tokens": 760,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s14",
+   "cond": "raw",
+   "traps": [
+    "secondary_in_eaches",
+    "primary_trucks_down"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 257,
+   "input_tokens": 5253,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s14",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches",
+    "primary_trucks_down"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 257,
+   "input_tokens": 744,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s15",
+   "cond": "raw",
+   "traps": [
+    "secondary_truck_late"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 325,
+   "input_tokens": 5226,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s15",
+   "cond": "context",
+   "traps": [
+    "secondary_truck_late"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 325,
+   "input_tokens": 739,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s16",
+   "cond": "raw",
+   "traps": [
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 155,
+   "input_tokens": 5232,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s17",
+   "cond": "raw",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 306,
+   "input_tokens": 4233,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s17",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 306,
+   "input_tokens": 765,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s18",
+   "cond": "raw",
+   "traps": [],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 153,
+   "input_tokens": 4154,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s18",
+   "cond": "context",
+   "traps": [],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 153,
+   "input_tokens": 755,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s19",
+   "cond": "raw",
+   "traps": [
+    "secondary_truck_late",
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 152,
+   "input_tokens": 4225,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s19",
+   "cond": "context",
+   "traps": [
+    "secondary_truck_late",
+    "primary_capacity_binding"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 152,
+   "input_tokens": 766,
+   "tokens_measured": false,
+   "latency_s": null
+  },
+  {
+   "id": "s20",
+   "cond": "context",
+   "traps": [
+    "secondary_in_eaches"
+   ],
+   "valid": true,
+   "correct": true,
+   "unsafe": false,
+   "issues": [],
+   "total": 150,
+   "input_tokens": 767,
+   "tokens_measured": false,
+   "latency_s": null
+  }
+ ]
+}

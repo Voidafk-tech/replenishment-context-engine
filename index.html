@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Replenishment Context Engine</title>
+<meta name="description" content="Prototype of a context engine that gives an AI copilot clean, cited replenishment facts for grocery retail.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: operations console. Header + tabs, demo = question bar, two answer columns, engine pipeline with a detail panel. Pitch tab = single reading column. */
+:root {
+  --bg: #f3f6f7; --surface: #ffffff; --sunk: #eaf0f2; --ink: #14202b; --muted: #5a6a77; --line: #d6dfe4;
+  --accent: #0b6a85; --accent-soft: #e0eff3; --accent-ink: #ffffff;
+  --ok: #1d7448; --ok-soft: #e3f3ea; --warn: #9a5c00; --warn-soft: #fbf0dc; --bad: #b0281c; --bad-soft: #fbe6e3;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d141a; --surface: #141e26; --sunk: #101920; --ink: #e4ecf1; --muted: #91a2af; --line: #25333e;
+  --accent: #52b4d0; --accent-soft: #11313c; --accent-ink: #06161c;
+  --ok: #4fc58c; --ok-soft: #10301f; --warn: #e3a94d; --warn-soft: #33260e; --bad: #f2776c; --bad-soft: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0d141a; --surface: #141e26; --sunk: #101920; --ink: #e4ecf1; --muted: #91a2af; --line: #25333e;
+  --accent: #52b4d0; --accent-soft: #11313c; --accent-ink: #06161c;
+  --ok: #4fc58c; --ok-soft: #10301f; --warn: #e3a94d; --warn-soft: #33260e; --bad: #f2776c; --bad-soft: #3a1714;
+  color-scheme: dark; }
+
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; font-weight: 700; }
+h3 { font-size: 1.02rem; font-weight: 700; }
+p { margin: 0; }
+.mono, td.num, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.muted { color: var(--muted); }
+small, .small { font-size: 0.83rem; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+header.top p { max-width: 62ch; color: var(--muted); margin-top: 6px; }
+.tabs { display: flex; gap: 4px; background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 4px; }
+.tabs button { font: 600 0.9rem var(--body); border: 0; background: transparent; color: var(--muted); padding: 8px 14px; border-radius: 7px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.stack { display: grid; gap: 16px; }
+
+/* question bar */
+.ask { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font: 700 0.85rem var(--display); }
+.ask q { font-size: 1.12rem; font-weight: 500; quotes: "\201C" "\201D"; }
+.ask .meta { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+
+/* answers */
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 820px) { .answers { grid-template-columns: 1fr; } }
+.answer { display: grid; gap: 12px; align-content: start; }
+.answer.bad { border-top: 3px solid var(--bad); }
+.answer.good { border-top: 3px solid var(--ok); }
+.answer .reply { background: var(--sunk); border-radius: 10px; padding: 12px 14px; }
+.flaws { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.flaws li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 0.9rem; }
+.flaws .x { width: 20px; height: 20px; border-radius: 50%; background: var(--bad-soft); color: var(--bad); font: 700 0.75rem var(--mono); display: grid; place-items: center; margin-top: 2px; }
+.cite { display: inline-block; font: 500 0.72rem var(--mono); background: var(--accent-soft); color: var(--accent); border-radius: 5px; padding: 1px 6px; margin-left: 3px; white-space: nowrap; vertical-align: 1px; }
+.pill { display: inline-block; font: 600 0.72rem var(--body); border-radius: 999px; padding: 2px 9px; letter-spacing: .02em; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.info { background: var(--accent-soft); color: var(--accent); }
+
+.options { display: grid; gap: 10px; }
+.opt { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; }
+.opt.rec { border-color: var(--accent); }
+.opt .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: baseline; }
+.kv { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.85rem; color: var(--muted); }
+.kv b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: 600 0.88rem var(--body); border-radius: 8px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn[disabled] { opacity: .55; cursor: default; }
+.status { font-size: 0.86rem; border-radius: 8px; padding: 10px 12px; background: var(--ok-soft); color: var(--ok); }
+
+/* pipeline */
+.pipe-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px; margin-bottom: 14px; }
+.stages { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; list-style: none; padding: 0; margin: 0 0 14px; counter-reset: s; }
+@media (max-width: 820px) { .stages { grid-template-columns: 1fr 1fr; } }
+.stages button { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); border-radius: 10px; padding: 10px 12px; cursor: pointer; font: inherit; display: grid; gap: 2px; height: 100%; }
+.stages button .n { font: 500 0.72rem var(--mono); color: var(--muted); }
+.stages button .t { font: 700 0.95rem var(--display); }
+.stages button .d { font-size: 0.78rem; color: var(--muted); }
+.stages button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.stages button[aria-selected="true"] .n { color: var(--accent); }
+.detail { display: grid; gap: 12px; }
+.detail > p { max-width: 75ch; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+td.num, th.num { text-align: right; }
+tr.total td { font-weight: 600; border-bottom: 0; }
+.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checks li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: 0.9rem; }
+.packet { font: 0.8rem/1.55 var(--mono); background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; white-space: pre; margin: 0; }
+.note { font-size: 0.8rem; color: var(--muted); }
+
+/* pitch */
+.read { max-width: 820px; display: grid; gap: 28px; }
+.read section { display: grid; gap: 12px; }
+.read p, .read li { max-width: 70ch; }
+.read ul, .read ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.fix td { white-space: normal; vertical-align: top; }
+.fix td:first-child { font-weight: 600; width: 22%; }
+.arch { display: grid; gap: 8px; }
+.layer { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; background: var(--surface); }
+.layer.ours { border: 2px solid var(--accent); background: var(--accent-soft); }
+.layer .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 0.76rem var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; background: var(--surface); }
+.down { text-align: center; color: var(--muted); font: 0.8rem var(--mono); }
+.calc { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px 16px; }
+.calc label { display: grid; gap: 3px; font-size: 0.8rem; color: var(--muted); }
+.calc input { font: 500 0.95rem var(--mono); padding: 7px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--ink); width: 100%; box-sizing: border-box; }
+.results { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.results div { background: var(--sunk); border-radius: 10px; padding: 10px 12px; }
+.results b { display: block; font: 600 1.25rem var(--mono); font-variant-numeric: tabular-nums; }
+.timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+.timeline li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.timeline .ts { font: 500 0.82rem var(--mono); color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) { .detail { animation: fade .25s ease; } @keyframes fade { from { opacity: .4; } to { opacity: 1; } } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Prototype · grocery replenishment · synthetic data</div>
+      <h1>Replenishment Context Engine</h1>
+      <p>We are not building a better AI model. We build the information environment an AI copilot needs before it recommends a stock move: the right products, live and committed inventory, constraints, and a source for every number.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-demo" aria-selected="true" data-view="demo">Live demo</button>
+      <button role="tab" id="tab-pitch" aria-selected="false" data-view="pitch">Pitch fixes</button>
+    </div>
+  </header>
+
+  <!-- ============ DEMO ============ -->
+  <main id="view-demo" class="stack">
+    <div class="panel ask">
+      <div class="avatar">IP</div>
+      <div>
+        <q>We're seeing unexpectedly high demand for bottled water in Vancouver. Can we replenish before tomorrow morning?</q>
+        <div class="meta">Inventory planner, Lower Mainland region · Thursday 18:04 · heat warning issued for Metro Vancouver</div>
+      </div>
+    </div>
+
+    <div class="answers">
+      <article class="panel answer bad">
+        <div class="row" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+          <h3>Copilot alone</h3><span class="pill bad">Unsafe answer</span>
+        </div>
+        <p class="small muted">Same model, after a typical search that returned only the warehouse stock table.</p>
+        <div class="reply">Yes. Delta DC shows <b>2,380 cases</b> of bottled water, well above the shortfall of about 1,300 cases. Ship 1,300 cases from Delta to the Vancouver stores tonight.</div>
+        <ul class="flaws">
+          <li><span class="x">1</span><span><b>Stale number.</b> 2,380 comes from a warehouse snapshot taken 6 hours ago.</span></li>
+          <li><span class="x">2</span><span><b>Committed stock counted as free.</b> 1,480 of those cases are already promised to Victoria and Kelowna orders. Following this advice shorts those customers by 880 cases.</span></li>
+          <li><span class="x">3</span><span><b>Ignores transport.</b> Only one truck is free at Delta tonight, and it carries 1,040 cases.</span></li>
+          <li><span class="x">4</span><span><b>No sources.</b> The planner cannot check where any figure came from or how old it is.</span></li>
+        </ul>
+      </article>
+
+      <article class="panel answer good">
+        <div class="row" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+          <h3>Copilot + context engine</h3><span class="pill ok">Ready for approval</span>
+        </div>
+        <p class="small muted">Same model, given the context packet built in the five steps below.</p>
+        <div class="reply">Partly. Six stores need <b>1,300 cases</b> before the next scheduled delivery<span class="cite">CAR·POS 18:02</span>. Only <b>900</b> are free at Delta<span class="cite">EWM·Delta 18:03</span>; the rest are committed. Kamloops can add <b>400</b> overnight at a cost above the approval limit<span class="cite">TM·18:03</span>. Two options:</div>
+        <div class="options">
+          <div class="opt rec">
+            <div class="row"><b>A · Delta truck tonight</b><span class="pill info">Recommended</span></div>
+            <div class="kv"><span>Covers <b>900 / 1,300</b> (69%)</span><span>Cost <b>$650</b></span><span>Departs <b>21:00</b></span><span>Within planner authority</span></div>
+          </div>
+          <div class="opt">
+            <div class="row"><b>B · A + Kamloops transfer</b><span class="pill warn">Needs regional sign-off</span></div>
+            <div class="kv"><span>Covers <b>1,300 / 1,300</b> (100%)</span><span>Extra cost <b>$2,100</b></span><span>Arrives <b>01:15</b></span><span>Water margin protected ≈ <b>$900</b></span></div>
+            <p class="small muted">The Kamloops leg costs more than the margin on the water itself. It pays off only if empty shelves also lose the rest of the shopper's basket. That is a manager's call, so the engine routes it for approval.</p>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="approveA">Approve option A</button>
+          <button class="btn ghost" id="approveB">Send option B for sign-off</button>
+        </div>
+        <div class="status" id="approveStatus" hidden></div>
+      </article>
+    </div>
+
+    <section class="panel">
+      <div class="pipe-head">
+        <div>
+          <div class="eyebrow">Inside the engine</div>
+          <h2>How the context packet is built</h2>
+        </div>
+        <p class="small muted">Click each step. All runs in about 3 seconds in production; times shown are data freshness.</p>
+      </div>
+      <ol class="stages" role="tablist">
+        <li><button role="tab" aria-selected="true" data-stage="1"><span class="n">STEP 1</span><span class="t">Resolve</span><span class="d">Which products and stores?</span></button></li>
+        <li><button role="tab" aria-selected="false" data-stage="2"><span class="n">STEP 2</span><span class="t">Gather</span><span class="d">Pull only relevant facts</span></button></li>
+        <li><button role="tab" aria-selected="false" data-stage="3"><span class="n">STEP 3</span><span class="t">Verify</span><span class="d">Freshness and commitments</span></button></li>
+        <li><button role="tab" aria-selected="false" data-stage="4"><span class="n">STEP 4</span><span class="t">Constrain</span><span class="d">Trucks, hours, approvals</span></button></li>
+        <li><button role="tab" aria-selected="false" data-stage="5"><span class="n">STEP 5</span><span class="t">Package</span><span class="d">Hand the AI a cited brief</span></button></li>
+      </ol>
+
+      <div class="detail" data-panel="1">
+        <p>"Bottled water" means different things in different systems. The checkout scanner knows UPCs, the ERP knows material numbers, the supplier knows its own item codes. The engine maps them to one product and finds the stores where sales broke from forecast.</p>
+        <div class="scroll"><table>
+          <thead><tr><th>Product</th><th>Checkout (UPC)</th><th>SAP S/4HANA material</th><th>Supplier item</th><th>In scope</th></tr></thead>
+          <tbody>
+            <tr><td>Spring water 24 × 500 ml</td><td class="mono">0 62600 10024 5</td><td class="mono">WTR-24-500</td><td class="mono">CW-500-24PK</td><td><span class="pill ok">Yes</span></td></tr>
+            <tr><td>Spring water 500 ml single</td><td class="mono">0 62600 10001 6</td><td class="mono">WTR-01-500</td><td class="mono">CW-500-EA</td><td><span class="pill warn">Store-supplied</span></td></tr>
+            <tr><td>Sparkling water 12 × 355 ml</td><td class="mono">0 62600 30012 2</td><td class="mono">SPK-12-355</td><td class="mono">CW-SP-12</td><td><span class="pill info">No spike</span></td></tr>
+          </tbody>
+        </table></div>
+        <div class="scroll"><table>
+          <thead><tr><th>Store</th><th class="num">Sales vs forecast (24 h)</th><th class="num">On hand (cases)</th><th class="num">Need to next delivery</th><th class="num">Gap</th></tr></thead>
+          <tbody>
+            <tr><td>Downtown · Granville</td><td class="num">3.6×</td><td class="num">40</td><td class="num">380</td><td class="num">340</td></tr>
+            <tr><td>Kitsilano</td><td class="num">3.4×</td><td class="num">60</td><td class="num">320</td><td class="num">260</td></tr>
+            <tr><td>Burnaby · Metrotown</td><td class="num">2.9×</td><td class="num">120</td><td class="num">330</td><td class="num">210</td></tr>
+            <tr><td>Mount Pleasant</td><td class="num">3.1×</td><td class="num">85</td><td class="num">290</td><td class="num">205</td></tr>
+            <tr><td>Richmond Centre</td><td class="num">2.5×</td><td class="num">150</td><td class="num">310</td><td class="num">160</td></tr>
+            <tr><td>North Vancouver · Lonsdale</td><td class="num">2.7×</td><td class="num">95</td><td class="num">220</td><td class="num">125</td></tr>
+            <tr class="total"><td>Six stores</td><td></td><td class="num">550</td><td class="num">1,850</td><td class="num">1,300</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">"Need" = forecast sales until Friday 14:00 scheduled delivery, recalculated with the last 24 h of checkout data.</p>
+      </div>
+
+      <div class="detail" data-panel="2" hidden>
+        <p>The engine queries only what the question needs: 1 product, 6 stores, 2 warehouses, 1 supplier, tonight's trucks. It does not dump whole tables into the prompt. Each fact is stored with its source and timestamp.</p>
+        <div class="scroll"><table>
+          <thead><tr><th>Source system</th><th>Fact pulled</th><th>As of</th><th>Freshness</th></tr></thead>
+          <tbody>
+            <tr><td>Checkout / SAP Customer Activity Repository</td><td>Store sales by hour</td><td class="mono">18:02</td><td><span class="pill ok">2 min</span></td></tr>
+            <tr><td>SAP S/4HANA (store stock)</td><td>On-hand per store</td><td class="mono">17:49</td><td><span class="pill ok">15 min</span></td></tr>
+            <tr><td>SAP EWM · Delta DC</td><td>On hand 2,380 cases</td><td class="mono">12:01</td><td><span class="pill bad">6 h · re-queried</span></td></tr>
+            <tr><td>SAP EWM · Kamloops DC</td><td>On hand 1,600 cases</td><td class="mono">17:58</td><td><span class="pill ok">6 min</span></td></tr>
+            <tr><td>SAP S/4HANA sales orders</td><td>Outbound orders not yet shipped</td><td class="mono">18:03</td><td><span class="pill ok">live</span></td></tr>
+            <tr><td>SAP Transportation Mgmt / 3PL</td><td>Free trucks and lane costs</td><td class="mono">18:03</td><td><span class="pill ok">live</span></td></tr>
+            <tr><td>SAP Ariba / supplier EDI</td><td>Lead time 48 h, next delivery Sat</td><td class="mono">06:00</td><td><span class="pill ok">daily, fine</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Freshness rules differ per fact type: sales must be minutes old, supplier lead times can be a day old.</p>
+      </div>
+
+      <div class="detail" data-panel="3" hidden>
+        <p>Before anything reaches the AI, the engine checks each fact against freshness rules and separates stock that exists from stock that is free to move. This is where the plain copilot went wrong.</p>
+        <ul class="checks">
+          <li><span class="pill bad">Fixed</span><span>Delta snapshot was 6 h old, over the 30 min limit for warehouse stock. Re-queried live: 2,380 on hand.</span></li>
+          <li><span class="pill bad">Fixed</span><span>1,480 Delta cases are committed to open orders: Victoria ferry run 1,000, Kelowna 480. <b>Free: 900.</b></span></li>
+          <li><span class="pill warn">Flagged</span><span>Kamloops: 1,600 on hand, 1,200 committed to Interior stores. <b>Free: 400.</b></span></li>
+          <li><span class="pill ok">Passed</span><span>UPC 0 62600 10024 5 maps to exactly one material. The single-bottle UPC is excluded so units are not mixed with cases.</span></li>
+        </ul>
+        <div class="scroll"><table>
+          <thead><tr><th>Warehouse</th><th class="num">On hand</th><th class="num">Committed</th><th class="num">Free to move</th></tr></thead>
+          <tbody>
+            <tr><td>Delta DC</td><td class="num">2,380</td><td class="num">1,480</td><td class="num">900</td></tr>
+            <tr><td>Kamloops DC</td><td class="num">1,600</td><td class="num">1,200</td><td class="num">400</td></tr>
+            <tr class="total"><td>Total</td><td class="num">3,980</td><td class="num">2,680</td><td class="num">1,300</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="detail" data-panel="4" hidden>
+        <p>Business rules come from the systems and from the planner's own policies. The engine applies them so the AI only proposes actions that can actually happen.</p>
+        <ul class="checks">
+          <li><span class="pill ok">Fits</span><span>Delta truck, free at 21:00: 26 pallets × 40 cases = 1,040 capacity, enough for 900.</span></li>
+          <li><span class="pill ok">Fits</span><span>Kamloops truck free at 20:30, 4 h 45 m to Burnaby. Arrives 01:15, before store receiving opens at 06:00.</span></li>
+          <li><span class="pill warn">Rule</span><span>Downtown Granville has no night receiving (23:00 to 06:00). Its 340 cases go first on the Delta run.</span></li>
+          <li><span class="pill warn">Rule</span><span>Transfers over $1,500 need regional manager approval. Kamloops leg is $2,100.</span></li>
+          <li><span class="pill bad">Blocked</span><span>Diverting the Victoria ferry order breaks a customer commitment. Not offered without director approval.</span></li>
+          <li><span class="pill info">Info</span><span>Supplier lead time 48 h: an expedited purchase order helps Saturday, not tomorrow morning.</span></li>
+        </ul>
+      </div>
+
+      <div class="detail" data-panel="5" hidden>
+        <p>The AI receives a short, structured brief instead of thousands of rows. Every line carries its source and timestamp, so the answer can cite them and the planner can check them. Provenance follows the W3C PROV model: entity, activity, agent.</p>
+<pre class="packet">question: replenish bottled water, Vancouver, before Fri 08:00
+product:  WTR-24-500  "Spring water 24×500ml"      [map: UPC→S/4→supplier]
+demand:   6 stores, gap 1,300 cases to Fri 14:00   [CAR·POS @18:02]
+supply:
+  delta_dc     on_hand 2,380  committed 1,480  free 900   [EWM @18:03 live]
+  kamloops_dc  on_hand 1,600  committed 1,200  free 400   [EWM @17:58]
+  supplier     lead_time 48h  -> too late for Fri         [Ariba @06:00]
+transport:
+  delta    truck 21:00  cap 1,040  cost $650              [TM @18:03]
+  kamloops truck 20:30  cap 1,040  cost $2,100  eta 01:15 [TM @18:03]
+constraints:
+  granville no receiving 23:00-06:00                      [store master]
+  transfer > $1,500 -> regional approval                  [policy v3]
+  committed customer orders are protected                 [policy v3]
+allowed_actions: draft_stock_transport_order, request_approval
+tokens: ~600</pre>
+        <p class="note">In our 19-scenario test, context packets averaged about 760 input tokens against about 4,600 for the raw tables (estimated as characters ÷ 4). See "Evaluation results" on the Pitch fixes tab.</p>
+      </div>
+    </section>
+    <p class="note">All store names, quantities, costs and timestamps are synthetic and illustrative. System names describe where each fact would come from in an SAP landscape.</p>
+  </main>
+
+  <!-- ============ PITCH ============ -->
+  <main id="view-pitch" class="read" hidden>
+    <section>
+      <div class="eyebrow">What the judges said, and what changes</div>
+      <h2>Feedback to fix</h2>
+      <div class="scroll"><table class="fix">
+        <thead><tr><th>Judge criterion</th><th>Their point</th><th>Our fix</th></tr></thead>
+        <tbody>
+          <tr><td>Problem definition</td><td>Pain points and workflows unclear; weak evidence of impact.</td><td>One user (inventory planner), one recurring moment (demand spike on a fast mover), a before/after workflow, and cited out-of-stock cost data. Interviews add our own evidence.</td></tr>
+          <tr><td>Problem–solution fit</td><td>Too conceptual; how does it connect data and support decisions?</td><td>The five-step engine (resolve, gather, verify, constrain, package), shown working in the demo, ending in a drafted stock transfer the human approves.</td></tr>
+          <tr><td>Business viability</td><td>No financial benefits, costs, or adoption plan; value beyond SAP unclear.</td><td>ROI model with stated assumptions, an 8-week single-category pilot, and a clear line between what SAP already provides and what we add.</td></tr>
+          <tr><td>Research &amp; evidence</td><td>Leans on Wendy's/Palantir instead of validating our own idea.</td><td>Wendy's moves to "market proof that buyers pay for this". Our evidence: planner interviews plus a with/without evaluation on public retail data.</td></tr>
+          <tr><td>Video pitch</td><td>Explains the idea instead of showing it working.</td><td>Most of the video becomes a screen recording of this demo.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Problem</div>
+      <h2>One user, one painful moment</h2>
+      <p><b>Who:</b> inventory and replenishment planners at mid-to-large grocery and convenience chains (50+ stores, 2+ distribution centres). <b>When:</b> demand on a fast-moving item breaks from forecast because of weather, a promotion or a local event, and stock has to move within hours.</p>
+      <p><b>Today's workflow (hypothesis to confirm in interviews):</b> the planner sees a sales alert, opens store stock, opens the warehouse system, checks open orders, phones or emails the transport desk, checks the approval policy, then builds the transfer by hand. Five or more systems, each with different product IDs and update times. AI copilots fail here for the same reason the planner is slow: the facts are scattered and some are stale.</p>
+      <p><b>Why it matters:</b> research on retail out-of-stocks has long found average shelf out-of-stock rates around 8%, with retailers losing roughly 4% of sales as a result (Gruen, Corsten &amp; Bharadwaj, 2002). Industry estimates put global losses from out-of-stocks and overstocks in the trillion-dollar range (IHL Group). <span class="muted">Verify exact figures and years from the original reports before citing in the deck.</span></p>
+    </section>
+
+    <section>
+      <div class="eyebrow">Solution</div>
+      <h2>What the engine does that SAP does not do alone</h2>
+      <p>SAP already provides much of the foundation: Business Data Cloud and Datasphere publish data products, the SAP Knowledge Graph describes what business objects mean and how they relate, and Joule gives users an AI assistant. We build on these rather than replace them. Our layer adds what a copilot needs at the moment of a decision:</p>
+      <ul>
+        <li><b>Decision-time freshness checks.</b> Each fact type has a maximum age. Stale facts are re-queried or flagged, never silently used.</li>
+        <li><b>Committed vs. free stock.</b> On-hand inventory is netted against open orders before the AI sees it.</li>
+        <li><b>Operational constraints and policy.</b> Truck capacity, receiving hours, approval thresholds and protected orders limit which actions the AI may propose.</li>
+        <li><b>Per-claim provenance.</b> Every number in the answer links to a system, record and timestamp (W3C PROV).</li>
+        <li><b>Compact context.</b> A brief of a few hundred tokens instead of a table dump, which lowers cost and reduces the chance the model fixes on irrelevant rows (Lewis et al., 2020, on retrieval-augmented generation).</li>
+      </ul>
+      <p>Positioning: a packaged <b>Joule agent for retail replenishment</b>, delivered by SAP or a partner, not a competing data platform.</p>
+      <div class="arch">
+        <div class="layer"><span class="eyebrow">Action</span><div class="chips"><span class="chip">Planner approves in Joule</span><span class="chip">Draft stock transport order in S/4HANA</span><span class="chip">Approval workflow</span></div></div>
+        <div class="down">▲ cited recommendation</div>
+        <div class="layer"><span class="eyebrow">AI</span><div class="chips"><span class="chip">Joule / any LLM</span></div></div>
+        <div class="down">▲ context packet (~600 tokens)</div>
+        <div class="layer ours"><span class="eyebrow">Our context engine</span><div class="chips"><span class="chip">Entity resolution</span><span class="chip">Freshness rules</span><span class="chip">Committed-stock netting</span><span class="chip">Constraint &amp; policy check</span><span class="chip">Provenance ledger</span></div></div>
+        <div class="down">▲ governed data products + semantics</div>
+        <div class="layer"><span class="eyebrow">SAP foundation (exists today)</span><div class="chips"><span class="chip">Business Data Cloud / Datasphere</span><span class="chip">SAP Knowledge Graph</span></div></div>
+        <div class="down">▲</div>
+        <div class="layer"><span class="eyebrow">Sources</span><div class="chips"><span class="chip">Checkout · Customer Activity Repository</span><span class="chip">S/4HANA</span><span class="chip">EWM</span><span class="chip">Transportation Mgmt</span><span class="chip">IBP forecast</span><span class="chip">Ariba / supplier EDI</span><span class="chip">Non-SAP 3PL, weather</span></div></div>
+      </div>
+      <p class="small muted">Confirm each SAP product's current scope against SAP documentation before the final pitch; product names and capabilities change often.</p>
+    </section>
+
+    <section>
+      <div class="eyebrow">Business case</div>
+      <h2>ROI model with editable assumptions</h2>
+      <p>Defaults describe a regional grocer with about 150 stores. Every input is an assumption to state openly in the pitch; change them to test sensitivity.</p>
+      <div class="calc">
+        <label for="c-rev">Annual revenue ($M)<input id="c-rev" type="number" value="3000" min="0"></label>
+        <label for="c-lost">Sales lost to out-of-stocks (%)<input id="c-lost" type="number" value="4" step="0.5" min="0"></label>
+        <label for="c-rec">Share of those losses we recover (%)<input id="c-rec" type="number" value="2" step="0.5" min="0"></label>
+        <label for="c-gm">Gross margin (%)<input id="c-gm" type="number" value="28" min="0"></label>
+        <label for="c-pl">Planners using it<input id="c-pl" type="number" value="20" min="0"></label>
+        <label for="c-hrs">Hours saved per planner per week<input id="c-hrs" type="number" value="4" min="0"></label>
+        <label for="c-rate">Loaded cost per hour ($)<input id="c-rate" type="number" value="45" min="0"></label>
+        <label for="c-impl">Year-1 implementation ($K)<input id="c-impl" type="number" value="500" min="0"></label>
+        <label for="c-run">Annual run cost ($K)<input id="c-run" type="number" value="150" min="0"></label>
+      </div>
+      <div class="results" aria-live="polite">
+        <div><span class="eyebrow">Margin recovered / yr</span><b id="r-margin">–</b></div>
+        <div><span class="eyebrow">Planner time / yr</span><b id="r-labor">–</b></div>
+        <div><span class="eyebrow">Year-1 net</span><b id="r-net">–</b></div>
+        <div><span class="eyebrow">Payback</span><b id="r-pay">–</b></div>
+      </div>
+      <p class="small muted">Recovering only 2% of out-of-stock losses is deliberately conservative: the engine targets event-driven spikes, not every empty shelf. The pilot measures the real number.</p>
+    </section>
+
+    <section>
+      <div class="eyebrow">Adoption</div>
+      <h2>Land small, prove it, expand</h2>
+      <ol>
+        <li><b>Shadow mode, weeks 1–4.</b> One region, one weather-sensitive category (bottled water and ice). The engine recommends; planners decide as usual. We log both.</li>
+        <li><b>Assisted mode, weeks 5–8.</b> Planners act from the engine's drafts and approve in Joule.</li>
+        <li><b>Expand.</b> Add promotion-driven categories, then more regions, once the pilot meets its targets.</li>
+      </ol>
+      <p><b>Pilot metrics:</b> out-of-stock hours on spike days, time from alert to approved transfer, share of recommendations accepted, and errors caught (stale or committed stock the copilot alone would have used).</p>
+    </section>
+
+    <section>
+      <div class="eyebrow">Evidence we generated ourselves</div>
+      <h2>Evaluation results</h2>
+      <p>We took 20 real demand spikes from the M5 Walmart store-sales data and added synthetic warehouse, order and truck tables. Each scenario hides traps: an out-of-date snapshot, shipped and cancelled orders mixed with open ones, stock counted in single units, trucks in maintenance or arriving too late, and costs that need approval. Each has one known correct answer. The same model (Claude Sonnet) answered every question twice: once with the raw tables, once with the context packet.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Model input</th><th class="num">Correct</th><th class="num">Unsafe plans</th><th class="num">Input tokens (est.)</th></tr></thead>
+        <tbody>
+          <tr><td>Raw tables (all relevant tables included)</td><td class="num">19 / 19</td><td class="num">0</td><td class="num">~4,600</td></tr>
+          <tr><td>Context packet</td><td class="num">19 / 19</td><td class="num">0</td><td class="num">~760</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>What it shows:</b> when a strong model is handed every relevant table, it reasons correctly. The packet gives the same answers with about 6× less input, which means lower cost and room for larger questions. The demo's failure case comes from the step before: a plain search often fetches the stock table but not open orders or trucks. Choosing and checking the right facts is the engine's job.</p>
+      <p class="small muted">Two of 40 runs were not completed. Token counts are estimated as characters ÷ 4. Next test: a smaller model and larger raw data pulls, to find where raw tables stop working. Code and data steps are in the project's README.</p>
+    </section>
+
+    <section>
+      <div class="eyebrow">Evidence still to gather</div>
+      <h2>Validation plan</h2>
+      <ul>
+        <li><b>Planner interviews (5–8).</b> Supply chain and inventory managers via LinkedIn, alumni and local grocery chains. Ask them to walk through the last demand spike: which systems, how long, what went wrong. Turn answers into a quote slide and a timed workflow.</li>
+        <li><b>Harder evaluation.</b> Rerun the with/without test with a smaller model and with category-wide raw data pulls, and add retrieval: let the plain copilot choose which tables to fetch.</li>
+        <li><b>Wendy's / Palantir</b> stays as one slide of market proof: a large food operator paid to connect supply chain data into one operational picture, and a human approved the system's proposed actions. That is our model too.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="eyebrow">Video</div>
+      <h2>Three-minute pitch, mostly demo</h2>
+      <ol class="timeline">
+        <li><span class="ts">0:00</span><span>Hook: the planner's Vancouver question, on screen.</span></li>
+        <li><span class="ts">0:15</span><span>Copilot alone answers confidently and is wrong in four ways. Point at each.</span></li>
+        <li><span class="ts">0:40</span><span>Click through the five steps. Linger on Verify: 2,380 becomes 900.</span></li>
+        <li><span class="ts">1:30</span><span>Show the cited answer, the two options and the approval. "The AI proposes, the planner decides."</span></li>
+        <li><span class="ts">1:55</span><span>Architecture slide: what SAP has, what we add.</span></li>
+        <li><span class="ts">2:15</span><span>Evidence: interview quotes and with/without accuracy results.</span></li>
+        <li><span class="ts">2:35</span><span>Business case and 8-week pilot ask.</span></li>
+        <li><span class="ts">2:55</span><span>Close: "Better information for AI, not a better AI."</span></li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  // tabs
+  var tabs = document.querySelectorAll('.tabs button');
+  function show(view) {
+    tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.dataset.view === view)); });
+    document.getElementById('view-demo').hidden = view !== 'demo';
+    document.getElementById('view-pitch').hidden = view !== 'pitch';
+  }
+  tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.view); try { history.replaceState(null, '', '#' + t.dataset.view); } catch (e) {} }); });
+  if (location.hash === '#pitch') show('pitch');
+
+  // pipeline stages
+  var stageBtns = document.querySelectorAll('.stages button');
+  stageBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      stageBtns.forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); });
+      document.querySelectorAll('.detail').forEach(function (p) { p.hidden = p.dataset.panel !== b.dataset.stage; });
+    });
+  });
+
+  // approvals (simulated)
+  var status = document.getElementById('approveStatus');
+  var a = document.getElementById('approveA'), bBtn = document.getElementById('approveB');
+  a.addEventListener('click', function () {
+    a.disabled = true;
+    status.hidden = false;
+    status.textContent = 'Simulated: stock transport order drafted in S/4HANA for 900 cases, Delta DC to 4 stores, truck 21:00. Granville unloads first. Audit log saved with all sources.';
+  });
+  bBtn.addEventListener('click', function () {
+    bBtn.disabled = true;
+    status.hidden = false;
+    status.textContent = 'Simulated: Kamloops transfer (400 cases, $2,100) sent to the regional manager with the cited brief attached.' + (a.disabled ? ' Option A is already drafted.' : '');
+  });
+
+  // ROI calculator
+  var ids = ['rev', 'lost', 'rec', 'gm', 'pl', 'hrs', 'rate', 'impl', 'run'];
+  function v(id) { var n = parseFloat(document.getElementById('c-' + id).value); return isFinite(n) && n >= 0 ? n : 0; }
+  function money(n) {
+    var s = n < 0 ? '−' : '', x = Math.abs(n);
+    return s + (x >= 1e6 ? '$' + (x / 1e6).toFixed(2) + 'M' : '$' + Math.round(x / 1e3) + 'K');
+  }
+  var WEEKS_PER_YEAR = 50;
+  function calc() {
+    var margin = v('rev') * 1e6 * v('lost') / 100 * v('rec') / 100 * v('gm') / 100;
+    var labor = v('pl') * v('hrs') * v('rate') * WEEKS_PER_YEAR;
+    var benefit = margin + labor;
+    var cost1 = (v('impl') + v('run')) * 1e3;
+    document.getElementById('r-margin').textContent = money(margin);
+    document.getElementById('r-labor').textContent = money(labor);
+    document.getElementById('r-net').textContent = money(benefit - cost1);
+    document.getElementById('r-pay').textContent = benefit > 0 ? (cost1 / (benefit / 12)).toFixed(1) + ' mo' : 'n/a';
+  }
+  ids.forEach(function (id) { document.getElementById('c-' + id).addEventListener('input', calc); });
+  calc();
+})();
+</script>
+</body>
+</html>

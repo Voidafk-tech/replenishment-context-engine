@@ -1,0 +1,38 @@
+{
+ "id": "s12",
+ "m5": {
+  "item": "FOODS_3_808",
+  "state": "TX",
+  "date": "2015-06-08",
+  "state_ratio": 9.94,
+  "spiked_stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ]
+ },
+ "question": {
+  "product_name": "Paper plates 50pk",
+  "stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ],
+  "spike_date": "2015-06-08"
+ },
+ "truth": {
+  "total_gap": 171,
+  "total_cases": 171,
+  "shipments": {
+   "Waco DC": 171,
+   "Houston DC": 0
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Waco DC": 182,
+   "Houston DC": 109
+  },
+  "traps": []
+ }
+}

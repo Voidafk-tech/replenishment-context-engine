@@ -1,0 +1,40 @@
+{
+ "id": "s17",
+ "m5": {
+  "item": "FOODS_3_327",
+  "state": "WI",
+  "date": "2015-11-25",
+  "state_ratio": 9.27,
+  "spiked_stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ]
+ },
+ "question": {
+  "product_name": "Frozen pizza",
+  "stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ],
+  "spike_date": "2015-11-25"
+ },
+ "truth": {
+  "total_gap": 306,
+  "total_cases": 306,
+  "shipments": {
+   "Madison DC": 306,
+   "Green Bay DC": 0
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Madison DC": 345,
+   "Green Bay DC": 101
+  },
+  "traps": [
+   "secondary_in_eaches"
+  ]
+ }
+}

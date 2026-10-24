@@ -1,0 +1,40 @@
+{
+ "id": "s20",
+ "m5": {
+  "item": "FOODS_3_809",
+  "state": "WI",
+  "date": "2015-12-12",
+  "state_ratio": 8.52,
+  "spiked_stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ]
+ },
+ "question": {
+  "product_name": "Corn on the cob 6pk",
+  "stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ],
+  "spike_date": "2015-12-12"
+ },
+ "truth": {
+  "total_gap": 150,
+  "total_cases": 150,
+  "shipments": {
+   "Madison DC": 125,
+   "Green Bay DC": 25
+  },
+  "fully_covered": true,
+  "needs_approval": true,
+  "limits": {
+   "Madison DC": 125,
+   "Green Bay DC": 80
+  },
+  "traps": [
+   "secondary_in_eaches"
+  ]
+ }
+}

@@ -1,0 +1,41 @@
+You are a supply-chain copilot for a grocery retailer. Answer the planner's question using only the data provided. Reply with a single JSON object and nothing else.
+
+Business rules:
+1. Need per store until the next scheduled delivery = yesterday's sales (in cases) x 1.5, rounded up.
+   Gap per store = need - store on-hand (never below 0). Only the listed stores count.
+2. Use the most recent inventory record for each warehouse. Inventory may be recorded in cases or eaches (EA);
+   convert eaches to cases with the product's case pack (round down).
+3. Stock committed to open customer orders cannot be moved. Shipped orders have already left the building and
+   cancelled orders hold no stock.
+4. A truck can be used only if its status is 'available' and it arrives by 07:00 tomorrow
+   (arrival = departure time today + drive hours). A truck carries at most its capacity.
+5. Ship from the primary DC first; use the secondary DC only for what the primary cannot cover.
+   Deliver as many cases as possible, up to the total gap.
+6. Any truck run costing more than $1500 needs regional manager approval.
+
+Planner question (today is the day after 2015-09-13, time 18:00): Sales of 'Popsicles 12pk' spiked yesterday at stores TX_1, TX_2, TX_3. How many cases can we get to those stores by 07:00 tomorrow, from which DCs, is the gap fully covered, and does the plan need approval?
+
+# Data: context packet
+question: replenish Popsicles 12pk at TX_1, TX_2, TX_3 by tomorrow 07:00
+product: material MAT-1049 | upc 0 41070 79947 4 | case pack 6   [product master]
+demand (need = yesterday's sales x1.5, rounded up):
+  TX_1: sold 68 yesterday, need 102, on hand 3, gap 99   [POS 2015-09-13; store stock @17:45]
+  TX_2: sold 38 yesterday, need 57, on hand 4, gap 53   [POS 2015-09-13; store stock @17:45]
+  TX_3: sold 44 yesterday, need 66, on hand 2, gap 64   [POS 2015-09-13; store stock @17:45]
+  total gap: 216 cases
+supply (free = latest on-hand minus open orders; shipped/cancelled orders ignored):
+  Waco DC (primary): on hand 386, open orders 184, FREE 202   [WMS @17:57; ignored stale snapshot @06:00]
+  Houston DC (secondary): on hand 337 (converted from eaches), open orders 159, FREE 178   [WMS @17:42; ignored stale snapshot @06:00]
+transport (must arrive by tomorrow 07:00):
+  T07-P1 at Waco DC: USABLE, capacity 240, cost $744, eta 22:48   [TMS]
+  T07-P2 at Waco DC: NOT USABLE (assigned), capacity 334, cost $744, eta 21:30   [TMS]
+  T07-S1 at Houston DC: USABLE, capacity 204, cost $1763, eta tomorrow 02:54   [TMS]
+  T07-S2 at Houston DC: NOT USABLE (assigned), capacity 334, cost $1563, eta tomorrow 01:00   [TMS]
+policy: use primary DC first; truck runs over $1500 need regional approval   [policy v3]
+
+Reply with JSON only, in this exact shape:
+{"total_cases": <int, cases delivered to the listed stores by 07:00>,
+ "shipments": [{"from_dc": "<DC name>", "cases": <int>}],
+ "fully_covered": <true if total_cases covers the whole gap>,
+ "needs_approval": <true if the plan needs regional approval>,
+ "explanation": "<one sentence>"}

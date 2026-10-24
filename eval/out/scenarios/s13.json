@@ -1,0 +1,40 @@
+{
+ "id": "s13",
+ "m5": {
+  "item": "FOODS_3_816",
+  "state": "WI",
+  "date": "2015-11-09",
+  "state_ratio": 9.93,
+  "spiked_stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ]
+ },
+ "question": {
+  "product_name": "Ground beef 1kg",
+  "stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ],
+  "spike_date": "2015-11-09"
+ },
+ "truth": {
+  "total_gap": 206,
+  "total_cases": 206,
+  "shipments": {
+   "Madison DC": 168,
+   "Green Bay DC": 38
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Madison DC": 168,
+   "Green Bay DC": 170
+  },
+  "traps": [
+   "primary_capacity_binding"
+  ]
+ }
+}

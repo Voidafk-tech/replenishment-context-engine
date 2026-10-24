@@ -1,0 +1,39 @@
+{
+ "id": "s14",
+ "m5": {
+  "item": "FOODS_3_234",
+  "state": "CA",
+  "date": "2015-06-02",
+  "state_ratio": 9.85,
+  "spiked_stores": [
+   "CA_1",
+   "CA_3"
+  ]
+ },
+ "question": {
+  "product_name": "Potato chips 255g",
+  "stores": [
+   "CA_1",
+   "CA_3"
+  ],
+  "spike_date": "2015-06-02"
+ },
+ "truth": {
+  "total_gap": 401,
+  "total_cases": 257,
+  "shipments": {
+   "Stockton DC": 0,
+   "Fontana DC": 257
+  },
+  "fully_covered": false,
+  "needs_approval": false,
+  "limits": {
+   "Stockton DC": 0,
+   "Fontana DC": 257
+  },
+  "traps": [
+   "secondary_in_eaches",
+   "primary_trucks_down"
+  ]
+ }
+}

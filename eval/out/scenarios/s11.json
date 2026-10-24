@@ -1,0 +1,39 @@
+{
+ "id": "s11",
+ "m5": {
+  "item": "FOODS_3_547",
+  "state": "CA",
+  "date": "2015-06-14",
+  "state_ratio": 10.87,
+  "spiked_stores": [
+   "CA_1",
+   "CA_3"
+  ]
+ },
+ "question": {
+  "product_name": "Watermelon whole",
+  "stores": [
+   "CA_1",
+   "CA_3"
+  ],
+  "spike_date": "2015-06-14"
+ },
+ "truth": {
+  "total_gap": 330,
+  "total_cases": 133,
+  "shipments": {
+   "Stockton DC": 133,
+   "Fontana DC": 0
+  },
+  "fully_covered": false,
+  "needs_approval": false,
+  "limits": {
+   "Stockton DC": 133,
+   "Fontana DC": 0
+  },
+  "traps": [
+   "secondary_in_eaches",
+   "secondary_truck_late"
+  ]
+ }
+}

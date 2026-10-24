@@ -1,0 +1,40 @@
+{
+ "id": "s03",
+ "m5": {
+  "item": "FOODS_3_090",
+  "state": "TX",
+  "date": "2016-01-09",
+  "state_ratio": 18.98,
+  "spiked_stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ]
+ },
+ "question": {
+  "product_name": "Sports drink 12x591ml",
+  "stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ],
+  "spike_date": "2016-01-09"
+ },
+ "truth": {
+  "total_gap": 443,
+  "total_cases": 359,
+  "shipments": {
+   "Waco DC": 359,
+   "Houston DC": 0
+  },
+  "fully_covered": false,
+  "needs_approval": false,
+  "limits": {
+   "Waco DC": 359,
+   "Houston DC": 0
+  },
+  "traps": [
+   "secondary_truck_late"
+  ]
+ }
+}

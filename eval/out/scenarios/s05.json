@@ -1,0 +1,38 @@
+{
+ "id": "s05",
+ "m5": {
+  "item": "FOODS_3_498",
+  "state": "TX",
+  "date": "2015-06-21",
+  "state_ratio": 13.5,
+  "spiked_stores": [
+   "TX_1",
+   "TX_3"
+  ]
+ },
+ "question": {
+  "product_name": "Sparkling water 12x355ml",
+  "stores": [
+   "TX_1",
+   "TX_3"
+  ],
+  "spike_date": "2015-06-21"
+ },
+ "truth": {
+  "total_gap": 341,
+  "total_cases": 341,
+  "shipments": {
+   "Waco DC": 230,
+   "Houston DC": 111
+  },
+  "fully_covered": true,
+  "needs_approval": false,
+  "limits": {
+   "Waco DC": 230,
+   "Houston DC": 235
+  },
+  "traps": [
+   "secondary_in_eaches"
+  ]
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "id": "s16",
+ "m5": {
+  "item": "FOODS_3_711",
+  "state": "CA",
+  "date": "2015-12-10",
+  "state_ratio": 9.53,
+  "spiked_stores": [
+   "CA_3",
+   "CA_4"
+  ]
+ },
+ "question": {
+  "product_name": "Coconut water 6x330ml",
+  "stores": [
+   "CA_3",
+   "CA_4"
+  ],
+  "spike_date": "2015-12-10"
+ },
+ "truth": {
+  "total_gap": 190,
+  "total_cases": 155,
+  "shipments": {
+   "Stockton DC": 90,
+   "Fontana DC": 65
+  },
+  "fully_covered": false,
+  "needs_approval": true,
+  "limits": {
+   "Stockton DC": 90,
+   "Fontana DC": 65
+  },
+  "traps": [
+   "primary_capacity_binding"
+  ]
+ }
+}

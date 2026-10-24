@@ -1,0 +1,41 @@
+{
+ "id": "s19",
+ "m5": {
+  "item": "FOODS_3_154",
+  "state": "WI",
+  "date": "2015-07-03",
+  "state_ratio": 8.94,
+  "spiked_stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ]
+ },
+ "question": {
+  "product_name": "Ice cream 1.5L",
+  "stores": [
+   "WI_1",
+   "WI_2",
+   "WI_3"
+  ],
+  "spike_date": "2015-07-03"
+ },
+ "truth": {
+  "total_gap": 206,
+  "total_cases": 152,
+  "shipments": {
+   "Madison DC": 152,
+   "Green Bay DC": 0
+  },
+  "fully_covered": false,
+  "needs_approval": false,
+  "limits": {
+   "Madison DC": 152,
+   "Green Bay DC": 0
+  },
+  "traps": [
+   "secondary_truck_late",
+   "primary_capacity_binding"
+  ]
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "id": "s18",
+ "m5": {
+  "item": "FOODS_3_785",
+  "state": "TX",
+  "date": "2015-08-09",
+  "state_ratio": 9.2,
+  "spiked_stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ]
+ },
+ "question": {
+  "product_name": "Cola 24x355ml",
+  "stores": [
+   "TX_1",
+   "TX_2",
+   "TX_3"
+  ],
+  "spike_date": "2015-08-09"
+ },
+ "truth": {
+  "total_gap": 153,
+  "total_cases": 153,
+  "shipments": {
+   "Waco DC": 134,
+   "Houston DC": 19
+  },
+  "fully_covered": true,
+  "needs_approval": true,
+  "limits": {
+   "Waco DC": 134,
+   "Houston DC": 69
+  },
+  "traps": []
+ }
+}

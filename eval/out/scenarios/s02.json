@@ -1,0 +1,42 @@
+{
+ "id": "s02",
+ "m5": {
+  "item": "FOODS_3_090",
+  "state": "CA",
+  "date": "2016-01-09",
+  "state_ratio": 19.34,
+  "spiked_stores": [
+   "CA_1",
+   "CA_2",
+   "CA_3",
+   "CA_4"
+  ]
+ },
+ "question": {
+  "product_name": "Bagged ice 5kg",
+  "stores": [
+   "CA_1",
+   "CA_2",
+   "CA_3",
+   "CA_4"
+  ],
+  "spike_date": "2016-01-09"
+ },
+ "truth": {
+  "total_gap": 554,
+  "total_cases": 554,
+  "shipments": {
+   "Stockton DC": 295,
+   "Fontana DC": 259
+  },
+  "fully_covered": true,
+  "needs_approval": true,
+  "limits": {
+   "Stockton DC": 295,
+   "Fontana DC": 431
+  },
+  "traps": [
+   "secondary_in_eaches"
+  ]
+ }
+}

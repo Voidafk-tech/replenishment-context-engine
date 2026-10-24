@@ -1,0 +1,39 @@
+{
+ "id": "s07",
+ "m5": {
+  "item": "FOODS_3_454",
+  "state": "CA",
+  "date": "2015-06-02",
+  "state_ratio": 12.59,
+  "spiked_stores": [
+   "CA_1",
+   "CA_3"
+  ]
+ },
+ "question": {
+  "product_name": "Lemonade 2L",
+  "stores": [
+   "CA_1",
+   "CA_3"
+  ],
+  "spike_date": "2015-06-02"
+ },
+ "truth": {
+  "total_gap": 317,
+  "total_cases": 190,
+  "shipments": {
+   "Stockton DC": 190,
+   "Fontana DC": 0
+  },
+  "fully_covered": false,
+  "needs_approval": false,
+  "limits": {
+   "Stockton DC": 190,
+   "Fontana DC": 0
+  },
+  "traps": [
+   "secondary_truck_late",
+   "primary_capacity_binding"
+  ]
+ }
+}
